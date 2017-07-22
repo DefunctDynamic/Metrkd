@@ -1,6 +1,7 @@
 const dgram = require("dgram");
 const net   = require("net");
 
+const _          = require("lodash");
 const { expect } = require("chai");
 
 const {
@@ -54,6 +55,31 @@ describe("TCPServer", () => {
 
       const client = net.connect(port, address, () => {
         client.write(message);
+        client.end();
+      });
+    });
+
+    it("SHOULD accept TCP split data packet", (done) => {
+      const address = "127.0.0.1";
+      const port    = 10126;
+
+      const message = "foobar:1223 bazbuffy:1337\n";
+
+      const server = new TCPServer(address, port);
+      expect(server.isClosed()).to.be.true;
+      server.accept((data, rinfo) => {
+        expect(message).to.be.equal(data.toString());
+        expect(message.length).to.be.equal(rinfo.size);
+        done();
+      });
+      expect(server.isListening()).to.be.true;
+
+      const client = net.connect(port, address, () => {
+        client.setNoDelay(true);
+        _.each(message.split(" "), (_message) => {
+          client.write(_message);
+          client.write(" ");
+        });
         client.end();
       });
     });
