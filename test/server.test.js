@@ -1,4 +1,5 @@
 const dgram = require("dgram");
+const fs    = require("fs");
 const net   = require("net");
 
 const _          = require("lodash");
@@ -6,7 +7,7 @@ const { expect } = require("chai");
 
 const {
         UDPServer,
-        TCPServer,
+        TCPServer
       } = require("../lib/server");
 
 describe("UDPServer", () => {
@@ -75,6 +76,32 @@ describe("TCPServer", () => {
       expect(server.isListening()).to.be.true;
 
       const client = net.connect(port, address, () => {
+        client.setNoDelay(true);
+        _.each(message.split(" "), (_message) => {
+          client.write(_message);
+          client.write(" ");
+        });
+        client.end();
+      });
+    });
+
+    it("SHOULD accept TCP data packet through unix socket", (done) => {
+      const address = "127.0.0.1";
+      const port    = null;
+
+      const message = "foobar:1223 bazbuffy:1337\n";
+      const socket  = "./tmp/test/stated.1.sock";
+
+      const server = new TCPServer(address, port, socket);
+      expect(server.isClosed()).to.be.true;
+      server.accept((data, rinfo) => {
+        expect(message).to.be.equal(data.toString());
+        expect(message.length).to.be.equal(rinfo.size);
+        done();
+      });
+      expect(server.isListening()).to.be.true;
+
+      const client = net.connect(socket, address, () => {
         client.setNoDelay(true);
         _.each(message.split(" "), (_message) => {
           client.write(_message);
