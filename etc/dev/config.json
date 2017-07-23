@@ -1,0 +1,14 @@
+{
+  "servers": [
+    {
+      "address": "0.0.0.0",
+      "port"   : 8125,
+      "type"   : "udp"
+    },
+    {
+      "address": "0.0.0.0",
+      "port"   : 8125,
+      "type"   : "tcp"
+    }
+  ]
+}

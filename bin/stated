@@ -1,0 +1,31 @@
+#!/usr/bin/env node
+
+const path = require("path");
+
+const _   = require("lodash");
+const cli = require("commander");
+
+const { version } = require("./../package");
+const main        = require("./../main");
+
+cli.version(`StateD: ${version}`)
+  .option("-c, --config <path>", "set configuration path. defaults to ./etc/dev/config.json")
+  .parse(process.argv);
+
+// noinspection JSUnresolvedVariable
+const configPath = _.get(cli, ["config"], "./etc/dev/config.json");
+
+function getName(name) {
+  let _name = name || "";
+  if (!_.isEmpty()) {
+    _name = path.basename(_name);
+  }
+  return _name;
+}
+
+const execName = getName(_.get(process, ["argv", 1], ""));
+const progName = getName(__filename);
+
+if (_.eq(execName, progName)) {
+  main(configPath);
+}
