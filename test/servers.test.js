@@ -8,7 +8,7 @@ const { expect } = require("chai");
 const {
         UDPServer,
         TCPServer
-      } = require("../lib/server");
+      } = require("../lib/servers");
 
 describe("UDPServer", () => {
   describe("#accept", () => {

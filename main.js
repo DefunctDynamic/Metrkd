@@ -1,6 +1,6 @@
 const config = require("./lib/config");
 
-function main(configPath) {
+function main({ configPath }) {
   try {
     config.load(configPath);
     global.console.log(config.get("servers"));
